@@ -55,10 +55,31 @@ function menu_item_visibility_module_implements_alter(&$implementations, $hook) 
 /**
  * Load all visibility data for a menu link.
  */
-function menu_item_visibility_load($mlid) {
-  $visibility = array();
+function menu_item_visibility_load($mlid, $reset = FALSE) {
+  // Use the advanced drupal_static() pattern, since this is called very often.
+  static $drupal_static_fast;
+
+  if (!isset($drupal_static_fast)) {
+    $drupal_static_fast['visibilities'] = &drupal_static(__FUNCTION__);
+  }
+
+  $visibilities = &$drupal_static_fast['visibilities'];
+
+  // If we haven't stored them all in the static build them from the database.
+  if (!isset($visibilities) || $reset) {
+    // Select all menu link ids and their role ids.
+    $result = db_select('menu_links_visibility_role', 'r')
+      ->fields('r')
+      ->execute()
+      ->fetchAll(PDO::FETCH_ASSOC);
+
+    $visibilities = array();
+    foreach ($result as $record) {
+      $visibilities[$record['mlid']][] = $record['rid'];
+    }
+  }
+  $visibility['roles'] = !empty($visibilities[$mlid]) ? $visibilities[$mlid] : array();
   if (!empty($mlid)) {
-    $visibility['roles'] = db_query("SELECT rid FROM {menu_links_visibility_role} WHERE mlid = :mlid", array(':mlid' => $mlid))->fetchCol();
     module_invoke_all('menu_item_visibility_load', $visibility, $mlid);
   }
   return $visibility;
@@ -127,7 +148,7 @@ function menu_item_visibility_form_menu_edit_item_alter(&$form, &$form_state) {
     ),
   );
 
-  $visibility = menu_item_visibility_load($form['mlid']['#value']);
+  $visibility = menu_item_visibility_load($form['mlid']['#value'], TRUE);
 
   // Per-role visibility.
   $form['visibility']['role'] = array(
