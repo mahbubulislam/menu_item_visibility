@@ -80,7 +80,7 @@ function menu_item_visibility_load($mlid, $reset = FALSE) {
   }
   $visibility['roles'] = !empty($visibilities[$mlid]) ? $visibilities[$mlid] : array();
   if (!empty($mlid)) {
-    module_invoke_all('menu_item_visibility_load', $visibility, $mlid);
+    drupal_alter('menu_item_visibility_load', $visibility, $mlid);
   }
   return $visibility;
 }
