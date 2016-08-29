@@ -1,7 +1,5 @@
 <?php
 
-
-
 /**
  * Implements hook_menu_link_alter().
  *
@@ -37,6 +35,20 @@ function menu_item_visibility_translated_menu_link_alter(&$item, $map) {
     if (!empty($item['visibility']['roles']) && !array_intersect($item['visibility']['roles'], array_keys($user->roles))) {
       $item['access'] = FALSE;
     }
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function menu_item_visibility_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'translated_menu_link_alter') {
+    // Move menu_item_visibility_translated_menu_link_alter() to the end of the
+    // list. This is mainly to deal with menu_token resetting the menu item
+    // access back to what is returned by menu_get_item().
+    $group = $implementations['menu_item_visibility'];
+    unset($implementations['menu_item_visibility']);
+    $implementations['menu_item_visibility'] = $group;
   }
 }
 
