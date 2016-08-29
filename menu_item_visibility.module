@@ -113,7 +113,6 @@ function _menu_item_visibility_menu_link_update($link) {
       ->condition('mlid', $link['mlid'])
       ->execute();
   }
-
   menu_item_visibility_menu_link_insert($link);
 }
 
