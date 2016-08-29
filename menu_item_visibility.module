@@ -105,9 +105,14 @@ function menu_item_visibility_menu_link_insert($link) {
  * Disabled as a hook until http://drupal.org/node/1013856 is fixed.
  */
 function _menu_item_visibility_menu_link_update($link) {
-  db_delete('menu_links_visibility_role')
-    ->condition('mlid', $link['mlid'])
-    ->execute();
+  // http://drupal.org/node/1369480
+  // Only delete the roles if the $link object contains actual role information
+  // otherwise role information will be lost when moving menu items.
+  if (isset($link['roles'])) {
+    db_delete('menu_links_visibility_role')
+      ->condition('mlid', $link['mlid'])
+      ->execute();
+  }
 
   menu_item_visibility_menu_link_insert($link);
 }
