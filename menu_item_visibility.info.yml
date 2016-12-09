@@ -1,5 +1,5 @@
 name: Menu item visibility
-description: 'Controls the visiblity of the menus for user roles.'
+description: 'Controls the visibility of the menus for user roles.'
 core: 8.x
 type: module
 
