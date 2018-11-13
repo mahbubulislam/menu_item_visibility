@@ -133,7 +133,7 @@ function menu_item_visibility_node_access(NodeInterface $node, $op, AccountInter
         $params = explode("=", $param_key);
       }
 
-      if (isset($params) && $node->id() == $params[1] && !$visiblity) {
+      if (isset($params[1]) && $node->id() == $params[1] && !$visiblity) {
         return AccessResult::forbidden();
       }
     }
