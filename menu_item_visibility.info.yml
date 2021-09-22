@@ -1,6 +1,6 @@
 name: Menu Item Visibility
 description: 'Controls the visibility of the menus for user roles.'
-core: 8.x
+core_version_requirement: ^8 || ^9
 type: module
 
 dependencies:
